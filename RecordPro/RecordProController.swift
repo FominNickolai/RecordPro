@@ -16,6 +16,9 @@ class RecordProController: UIViewController, AVAudioRecorderDelegate {
     @IBOutlet fileprivate var recordButton: UIButton!
     @IBOutlet fileprivate var timeLabel: UILabel!
     
+    fileprivate var timer: Timer?
+    fileprivate var elapsedTimeInSecond: Int = 0
+    
     var audioRecorder: AVAudioRecorder?
     var audioPlayer: AVAudioPlayer?
     
@@ -70,6 +73,7 @@ class RecordProController: UIViewController, AVAudioRecorderDelegate {
         
         //Stop the audio recorder
         audioRecorder?.stop()
+        resetTimer()
         let audioSession = AVAudioSession.sharedInstance()
         do {
             try audioSession.setActive(false)
@@ -84,6 +88,7 @@ class RecordProController: UIViewController, AVAudioRecorderDelegate {
                 audioPlayer = try? AVAudioPlayer(contentsOf: recorder.url)
                 audioPlayer?.delegate = self
                 audioPlayer?.play()
+                startTimer()
             }
         }
     }
@@ -104,6 +109,7 @@ class RecordProController: UIViewController, AVAudioRecorderDelegate {
                     try audioSession.setActive(true)
                     //Start recording
                     recorder.record()
+                    startTimer()
                     //Change to the Pause image
                     recordButton.setImage(UIImage(named: "Pause"), for: .normal)
                 } catch {
@@ -112,6 +118,7 @@ class RecordProController: UIViewController, AVAudioRecorderDelegate {
             } else {
                 //Pause recording
                 recorder.pause()
+                pauseTimer()
                 //Change to the Record image
                 recordButton.setImage(UIImage(named: "Record"), for: .normal)
             }
@@ -143,7 +150,31 @@ extension RecordProController: AVAudioPlayerDelegate {
     }
 }
 
-
+//MARK: - Timer Label
+extension RecordProController {
+    func startTimer() {
+        timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true, block: { (timer) in
+            self.elapsedTimeInSecond += 1
+            self.updateTimeLabel()
+        })
+    }
+    
+    func pauseTimer() {
+        timer?.invalidate()
+    }
+    
+    func resetTimer() {
+        timer?.invalidate()
+        elapsedTimeInSecond = 0
+        updateTimeLabel()
+    }
+    
+    func updateTimeLabel() {
+        let seconds = elapsedTimeInSecond % 60
+        let minutes = (elapsedTimeInSecond / 60) % 60
+        timeLabel.text = String(format: "%02d:%02d", minutes, seconds)
+    }
+}
 
 
 
