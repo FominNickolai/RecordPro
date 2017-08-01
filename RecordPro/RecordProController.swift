@@ -11,10 +11,10 @@ import AVFoundation
 
 class RecordProController: UIViewController, AVAudioRecorderDelegate {
 
-    @IBOutlet private var stopButton: UIButton!
-    @IBOutlet private var playButton: UIButton!
-    @IBOutlet private var recordButton: UIButton!
-    @IBOutlet private var timeLabel: UILabel!
+    @IBOutlet fileprivate var stopButton: UIButton!
+    @IBOutlet fileprivate var playButton: UIButton!
+    @IBOutlet fileprivate var recordButton: UIButton!
+    @IBOutlet fileprivate var timeLabel: UILabel!
     
     var audioRecorder: AVAudioRecorder?
     var audioPlayer: AVAudioPlayer?
@@ -79,7 +79,13 @@ class RecordProController: UIViewController, AVAudioRecorderDelegate {
     }
 
     @IBAction func play(sender: UIButton) {
-        
+        if let recorder = audioRecorder {
+            if !recorder.isRecording {
+                audioPlayer = try? AVAudioPlayer(contentsOf: recorder.url)
+                audioPlayer?.delegate = self
+                audioPlayer?.play()
+            }
+        }
     }
 
     @IBAction func record(sender: UIButton) {
@@ -126,6 +132,16 @@ class RecordProController: UIViewController, AVAudioRecorderDelegate {
 
 }
 
+//MARK: - AVAudioPlayerDelegate
+extension RecordProController: AVAudioPlayerDelegate {
+    func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
+        playButton.isSelected = false
+        
+        let alertMessage = UIAlertController(title: "Finish PLaying!", message: "Finish playing the rocording!", preferredStyle: .alert)
+        alertMessage.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+        present(alertMessage, animated: true, completion: nil)
+    }
+}
 
 
 
