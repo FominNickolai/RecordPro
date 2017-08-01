@@ -114,6 +114,15 @@ class RecordProController: UIViewController, AVAudioRecorderDelegate {
         stopButton.isEnabled = true
         playButton.isEnabled = false
     }
+    
+    //MARK: - AVAudioRecorderDelegate
+    func audioRecorderDidFinishRecording(_ recorder: AVAudioRecorder, successfully flag: Bool) {
+        if flag {
+            let alertMessage = UIAlertController(title: "Finish Recording", message: "Successfully recorded the audio!", preferredStyle: .alert)
+            alertMessage.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+            present(alertMessage, animated: true, completion: nil)
+        }
+    }
 
 }
 
