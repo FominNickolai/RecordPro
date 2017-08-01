@@ -71,7 +71,53 @@ class RecordProController: UIViewController, AVAudioRecorderDelegate {
     }
 
     @IBAction func record(sender: UIButton) {
+        //Stop the audio player before recording
+        if let player = audioPlayer {
+            if player.isPlaying {
+                player.stop()
+            }
+        }
         
+        if let recorder = audioRecorder {
+            if !recorder.isRecording {
+                let audioSession = AVAudioSession.sharedInstance()
+                
+                do {
+                    try audioSession.setActive(true)
+                    //Start recording
+                    recorder.record()
+                    //Change to the Pause image
+                    recordButton.setImage(UIImage(named: "Pause"), for: .normal)
+                } catch {
+                    print(error)
+                }
+            } else {
+                //Pause recording
+                recorder.pause()
+                //Change to the Record image
+                recordButton.setImage(UIImage(named: "Record"), for: .normal)
+            }
+        }
+        
+        stopButton.isEnabled = true
+        playButton.isEnabled = false
     }
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
