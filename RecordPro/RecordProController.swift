@@ -63,7 +63,19 @@ class RecordProController: UIViewController, AVAudioRecorderDelegate {
     // MARK: - Action methods
     
     @IBAction func stop(sender: UIButton) {
+        recordButton.setImage(UIImage(named: "Record"), for: .normal)
+        recordButton.isEnabled = true
+        stopButton.isEnabled = false
+        playButton.isEnabled = true
         
+        //Stop the audio recorder
+        audioRecorder?.stop()
+        let audioSession = AVAudioSession.sharedInstance()
+        do {
+            try audioSession.setActive(false)
+        } catch {
+            print(error)
+        }
     }
 
     @IBAction func play(sender: UIButton) {
